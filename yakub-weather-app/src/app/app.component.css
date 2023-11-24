@@ -1,0 +1,80 @@
+/* Style the Body */
+::ng-deep body {
+  background-color: #bfbfbf;
+}
+/* Table styles */
+table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+  background-color: #252b50;
+  box-shadow: 0px 4px 5px #3f51b5;
+  border-radius: 16px 16px;
+  overflow: hidden;
+  color: #cdcaca;
+}
+
+/* Table headings */
+th {
+  background-color: #3f51b5;
+  color: #d7d5d5;
+  padding: 12px;
+  text-align: left;
+}
+
+/* Table cells */
+td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #252b50;
+}
+
+/* Row headings */
+h2 {
+  background-color: #252b50;
+  color: #d7d5d5;
+  padding: 25px 12px;
+  margin: 2;
+  border-radius: 0px 0px 0 0;
+}
+
+h3 {
+  background: linear-gradient(to left, #252b50, #ffffff);
+  color: #2d3561;
+  padding: 1px 12px;
+  margin: 0;
+  border-radius: 0px 0px 0 0;
+  font-size: x-large;
+}
+/* First cell in each row */
+tr > td:first-child {
+  font-weight: bold;
+}
+
+/* Last row */
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Custom styling for individual rows */
+tr:nth-child(odd) {
+  background-color: #252b50;
+}
+/* Style the Ort Input */
+.example-form-field1 {
+  width: 400px;
+  padding: 50px 4px;
+  margin: 10px;
+}
+/* Style the Datum Input */
+.example-form-field2 {
+  width: 400px;
+  padding: 50px 4px;
+  margin: 10px;
+}
+/* Style the Button */
+.example-button-row button,
+.example-button-row a {
+  margin-left: 12px;
+  margin-top: -70px;
+}

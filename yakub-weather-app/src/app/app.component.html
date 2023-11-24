@@ -1,0 +1,561 @@
+<div class="weather-toolbar">
+  <div class="weather-info">
+    <h2>Weather-App</h2>
+  </div>
+</div>
+
+<mat-form-field class="example-form-field1">
+  <mat-label> Ort eingeben bitte</mat-label>
+  <input matInput type="text" (change)="updateOrt($event)" [(ngModel)]="value1">
+  @if (value1) {
+  <button matSuffix mat-icon-button aria-label="Clear" (click)="value1=''">
+    <mat-icon>close</mat-icon>
+  </button>
+  }
+</mat-form-field>
+
+<mat-form-field class="example-form-field2">
+  <mat-label>Datum auswählen bitte</mat-label>
+  <input matInput id="Date" (change)="updateDate($event)" [matDatepicker]="datepicker">
+  <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
+  <mat-datepicker #datepicker>
+    <mat-datepicker-actions>
+      <button mat-button matDatepickerCancel>Abbrechen</button>
+      <button mat-raised-button color="primary" matDatepickerApply>Anwenden</button>
+    </mat-datepicker-actions>
+  </mat-datepicker>
+</mat-form-field>
+
+<div class="example-button-row">
+  <button mat-raised-button color="primary" (click)="getweather()">Suchen</button>
+</div>
+
+<table>
+  <tr>
+    <th>
+      <h1>Ort :- {{ ortInfo.name}}</h1>
+    </th>
+    <th>
+      <h1>Region :- {{ ortInfo.region}}</h1>
+    </th>
+    <th>
+      <h1>Land :- {{ ortInfo.country}}</h1>
+    </th>
+    <th>
+      <h1>Zeitzone :- {{ ortInfo.tz_id}}</h1>
+    </th>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <h3>Aktuell : </h3>
+  </tr>
+
+  <tr>
+    <th>Wetterdaten</th>
+    <th>Grad</th>
+  </tr>
+
+  <tr>
+    <td>Temperatur in C°</td>
+    <td>{{currentInfo.temp_c}}</td>
+
+  </tr>
+  <tr>
+    <td>Gefühlte Temperatur in C°</td>
+    <td>{{currentInfo.feelslike_c}}</td>
+
+  </tr>
+  <tr>
+    <td>Windgeschwindigkeit in Km/H</td>
+    <td>{{currentInfo.wind_kph}}</td>
+
+  </tr>
+  <tr>
+    <td>Windrichtung</td>
+    <td>{{currentInfo.wind_degree}}</td>
+
+  </tr>
+  <tr>
+    <td>Wolkenwahrscheinlichkeit in %</td>
+    <td>{{currentInfo.cloud}}</td>
+
+  </tr>
+
+</table>
+
+<table>
+  <tr>
+    <h3>Heute : {{ todayInfo.date? todayInfo.date: ''}}</h3>
+  </tr>
+
+  <tr>
+    <th>Wetterdaten</th>
+    <th>Morgens</th>
+    <th>Mittags</th>
+    <th>Abends</th>
+    <th>Nachts</th>
+  </tr>
+  <tr>
+    <td>Temperatur in C°</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[6].temp_c, todayInfo.hour[7].temp_c,
+      todayInfo.hour[8].temp_c,
+      todayInfo.hour[9].temp_c, todayInfo.hour[10].temp_c, todayInfo.hour[11].temp_c]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[12].temp_c,
+      todayInfo.hour[13].temp_c,
+      todayInfo.hour[14].temp_c,
+      todayInfo.hour[15].temp_c, todayInfo.hour[16].temp_c,
+      todayInfo.hour[17].temp_c]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[18].temp_c,
+      todayInfo.hour[19].temp_c,
+      todayInfo.hour[20].temp_c,
+      todayInfo.hour[21].temp_c]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[22].temp_c,
+      todayInfo.hour[23].temp_c,
+      todayInfo.hour[0].temp_c,
+      todayInfo.hour[1].temp_c, todayInfo.hour[2].temp_c,
+      todayInfo.hour[3].temp_c, todayInfo.hour[4].temp_c,
+      todayInfo.hour[5].temp_c]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Gefühlte Temperatur in C°</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[6].feelslike_c,
+      todayInfo.hour[7].feelslike_c,
+      todayInfo.hour[8].feelslike_c,
+      todayInfo.hour[9].feelslike_c, todayInfo.hour[10].feelslike_c, todayInfo.hour[11].feelslike_c]):0
+      }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[12].feelslike_c,
+      todayInfo.hour[13].feelslike_c,
+      todayInfo.hour[14].feelslike_c,
+      todayInfo.hour[15].feelslike_c, todayInfo.hour[16].feelslike_c,
+      todayInfo.hour[17].feelslike_c]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[18].feelslike_c,
+      todayInfo.hour[19].feelslike_c,
+      todayInfo.hour[20].feelslike_c,
+      todayInfo.hour[21].feelslike_c]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[22].feelslike_c,
+      todayInfo.hour[23].feelslike_c,
+      todayInfo.hour[0].feelslike_c,
+      todayInfo.hour[1].feelslike_c, todayInfo.hour[2].feelslike_c,
+      todayInfo.hour[3].feelslike_c, todayInfo.hour[4].feelslike_c,
+      todayInfo.hour[5].feelslike_c]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Windgeschwindigkeit in Km/H</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[6].wind_kph, todayInfo.hour[7].wind_kph,
+      todayInfo.hour[8].wind_kph,
+      todayInfo.hour[9].wind_kph, todayInfo.hour[10].wind_kph, todayInfo.hour[11].wind_kph]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[12].wind_kph,
+      todayInfo.hour[13].wind_kph,
+      todayInfo.hour[14].wind_kph,
+      todayInfo.hour[15].wind_kph, todayInfo.hour[16].wind_kph,
+      todayInfo.hour[17].wind_kph]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[18].wind_kph,
+      todayInfo.hour[19].wind_kph,
+      todayInfo.hour[20].wind_kph,
+      todayInfo.hour[21].wind_kph]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[22].wind_kph,
+      todayInfo.hour[23].wind_kph,
+      todayInfo.hour[0].wind_kph,
+      todayInfo.hour[1].wind_kph, todayInfo.hour[2].wind_kph,
+      todayInfo.hour[3].wind_kph, todayInfo.hour[4].wind_kph,
+      todayInfo.hour[5].wind_kph]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Windrichtung</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[6].wind_degree, todayInfo.hour[7].wind_degree,
+      todayInfo.hour[8].wind_degree,
+      todayInfo.hour[9].wind_degree, todayInfo.hour[10].wind_degree, todayInfo.hour[11].wind_degree]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[12].wind_degree,
+      todayInfo.hour[13].wind_degree,
+      todayInfo.hour[14].wind_degree,
+      todayInfo.hour[15].wind_degree, todayInfo.hour[16].wind_degree,
+      todayInfo.hour[17].wind_degree]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[18].wind_degree,
+      todayInfo.hour[19].wind_degree,
+      todayInfo.hour[20].wind_degree,
+      todayInfo.hour[21].wind_degree]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[22].wind_degree,
+      todayInfo.hour[23].wind_degree,
+      todayInfo.hour[0].wind_degree,
+      todayInfo.hour[1].wind_degree, todayInfo.hour[2].wind_degree,
+      todayInfo.hour[3].wind_degree, todayInfo.hour[4].wind_degree,
+      todayInfo.hour[5].wind_degree]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Wolkenwahrscheinlichkeit in %</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[6].cloud, todayInfo.hour[7].cloud,
+      todayInfo.hour[8].cloud,
+      todayInfo.hour[9].cloud, todayInfo.hour[10].cloud, todayInfo.hour[11].cloud]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[12].cloud,
+      todayInfo.hour[13].cloud,
+      todayInfo.hour[14].cloud,
+      todayInfo.hour[15].cloud, todayInfo.hour[16].cloud,
+      todayInfo.hour[17].cloud]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[18].cloud,
+      todayInfo.hour[19].cloud,
+      todayInfo.hour[20].cloud,
+      todayInfo.hour[21].cloud]):0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[22].cloud,
+      todayInfo.hour[23].cloud,
+      todayInfo.hour[0].cloud,
+      todayInfo.hour[1].cloud, todayInfo.hour[2].cloud,
+      todayInfo.hour[3].cloud, todayInfo.hour[4].cloud,
+      todayInfo.hour[5].cloud]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Regenwahrscheinlichkeit in %</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[6].will_it_rain,
+      todayInfo.hour[7].will_it_rain,
+      todayInfo.hour[8].will_it_rain,
+      todayInfo.hour[9].will_it_rain, todayInfo.hour[10].will_it_rain,
+      todayInfo.hour[11].will_it_rain]) !==0? calculateAverage([todayInfo.hour[6].will_it_rain,
+      todayInfo.hour[7].will_it_rain,
+      todayInfo.hour[8].will_it_rain,
+      todayInfo.hour[9].will_it_rain, todayInfo.hour[10].will_it_rain,
+      todayInfo.hour[11].will_it_rain])*100 : 0 : 0 }}
+    </td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[12].will_it_rain,
+      todayInfo.hour[13].will_it_rain,
+      todayInfo.hour[14].will_it_rain,
+      todayInfo.hour[15].will_it_rain, todayInfo.hour[16].will_it_rain,
+      todayInfo.hour[17].will_it_rain])!==0? calculateAverage([todayInfo.hour[12].will_it_rain,
+      todayInfo.hour[13].will_it_rain,
+      todayInfo.hour[14].will_it_rain,
+      todayInfo.hour[15].will_it_rain, todayInfo.hour[16].will_it_rain,
+      todayInfo.hour[17].will_it_rain])*100 : 0 : 0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[18].will_it_rain,
+      todayInfo.hour[19].will_it_rain,
+      todayInfo.hour[20].will_it_rain,
+      todayInfo.hour[21].will_it_rain]) !==0?calculateAverage([todayInfo.hour[18].will_it_rain,
+      todayInfo.hour[19].will_it_rain,
+      todayInfo.hour[20].will_it_rain,
+      todayInfo.hour[21].will_it_rain])*100 : 0 : 0 }}</td>
+    <td>{{ todayInfo.hour.length > 23 ? calculateAverage([todayInfo.hour[22].will_it_rain,
+      todayInfo.hour[23].will_it_rain,
+      todayInfo.hour[0].will_it_rain,
+      todayInfo.hour[1].will_it_rain, todayInfo.hour[2].will_it_rain,
+      todayInfo.hour[3].will_it_rain, todayInfo.hour[4].will_it_rain,
+      todayInfo.hour[5].will_it_rain])!==0?calculateAverage([todayInfo.hour[22].will_it_rain,
+      todayInfo.hour[23].will_it_rain,
+      todayInfo.hour[0].will_it_rain,
+      todayInfo.hour[1].will_it_rain, todayInfo.hour[2].will_it_rain,
+      todayInfo.hour[3].will_it_rain, todayInfo.hour[4].will_it_rain,
+      todayInfo.hour[5].will_it_rain])*100 : 0 : 0 }}</td>
+  </tr>
+</table>
+
+
+<table>
+  <tr>
+    <h3>Morgen : {{ tomorowInfo.date? tomorowInfo.date: ''}}</h3>
+  </tr>
+
+  <tr>
+    <th>Wetterdaten</th>
+    <th>Morgens</th>
+    <th>Mittags</th>
+    <th>Abends</th>
+    <th>Nachts</th>
+  </tr>
+  <tr>
+    <td>Temperatur in C°</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[6].temp_c, tomorowInfo.hour[7].temp_c,
+      tomorowInfo.hour[8].temp_c,
+      tomorowInfo.hour[9].temp_c, tomorowInfo.hour[10].temp_c, tomorowInfo.hour[11].temp_c]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[12].temp_c,
+      tomorowInfo.hour[13].temp_c,
+      tomorowInfo.hour[14].temp_c,
+      tomorowInfo.hour[15].temp_c, tomorowInfo.hour[16].temp_c,
+      tomorowInfo.hour[17].temp_c]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[18].temp_c,
+      tomorowInfo.hour[19].temp_c,
+      tomorowInfo.hour[20].temp_c,
+      tomorowInfo.hour[21].temp_c]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[22].temp_c,
+      tomorowInfo.hour[23].temp_c,
+      tomorowInfo.hour[0].temp_c,
+      tomorowInfo.hour[1].temp_c, tomorowInfo.hour[2].temp_c,
+      tomorowInfo.hour[3].temp_c, tomorowInfo.hour[4].temp_c,
+      tomorowInfo.hour[5].temp_c]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Gefühlte Temperatur in C°</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[6].feelslike_c,
+      tomorowInfo.hour[7].feelslike_c,
+      tomorowInfo.hour[8].feelslike_c,
+      tomorowInfo.hour[9].feelslike_c, tomorowInfo.hour[10].feelslike_c, tomorowInfo.hour[11].feelslike_c]):0
+      }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[12].feelslike_c,
+      tomorowInfo.hour[13].feelslike_c,
+      tomorowInfo.hour[14].feelslike_c,
+      tomorowInfo.hour[15].feelslike_c, tomorowInfo.hour[16].feelslike_c,
+      tomorowInfo.hour[17].feelslike_c]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[18].feelslike_c,
+      tomorowInfo.hour[19].feelslike_c,
+      tomorowInfo.hour[20].feelslike_c,
+      tomorowInfo.hour[21].feelslike_c]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[22].feelslike_c,
+      tomorowInfo.hour[23].feelslike_c,
+      tomorowInfo.hour[0].feelslike_c,
+      tomorowInfo.hour[1].feelslike_c, tomorowInfo.hour[2].feelslike_c,
+      tomorowInfo.hour[3].feelslike_c, tomorowInfo.hour[4].feelslike_c,
+      tomorowInfo.hour[5].feelslike_c]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Windgeschwindigkeit in Km/H</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[6].wind_kph, tomorowInfo.hour[7].wind_kph,
+      tomorowInfo.hour[8].wind_kph,
+      tomorowInfo.hour[9].wind_kph, tomorowInfo.hour[10].wind_kph, tomorowInfo.hour[11].wind_kph]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[12].wind_kph,
+      tomorowInfo.hour[13].wind_kph,
+      tomorowInfo.hour[14].wind_kph,
+      tomorowInfo.hour[15].wind_kph, tomorowInfo.hour[16].wind_kph,
+      tomorowInfo.hour[17].wind_kph]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[18].wind_kph,
+      tomorowInfo.hour[19].wind_kph,
+      tomorowInfo.hour[20].wind_kph,
+      tomorowInfo.hour[21].wind_kph]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[22].wind_kph,
+      tomorowInfo.hour[23].wind_kph,
+      tomorowInfo.hour[0].wind_kph,
+      tomorowInfo.hour[1].wind_kph, tomorowInfo.hour[2].wind_kph,
+      tomorowInfo.hour[3].wind_kph, tomorowInfo.hour[4].wind_kph,
+      tomorowInfo.hour[5].wind_kph]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Windrichtung</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[6].wind_degree,
+      tomorowInfo.hour[7].wind_degree,
+      tomorowInfo.hour[8].wind_degree,
+      tomorowInfo.hour[9].wind_degree, tomorowInfo.hour[10].wind_degree, tomorowInfo.hour[11].wind_degree]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[12].wind_degree,
+      tomorowInfo.hour[13].wind_degree,
+      tomorowInfo.hour[14].wind_degree,
+      tomorowInfo.hour[15].wind_degree, tomorowInfo.hour[16].wind_degree,
+      tomorowInfo.hour[17].wind_degree]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[18].wind_degree,
+      tomorowInfo.hour[19].wind_degree,
+      tomorowInfo.hour[20].wind_degree,
+      tomorowInfo.hour[21].wind_degree]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[22].wind_degree,
+      tomorowInfo.hour[23].wind_degree,
+      tomorowInfo.hour[0].wind_degree,
+      tomorowInfo.hour[1].wind_degree, tomorowInfo.hour[2].wind_degree,
+      tomorowInfo.hour[3].wind_degree, tomorowInfo.hour[4].wind_degree,
+      tomorowInfo.hour[5].wind_degree]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Wolkenwahrscheinlichkeit in %</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[6].cloud, tomorowInfo.hour[7].cloud,
+      tomorowInfo.hour[8].cloud,
+      tomorowInfo.hour[9].cloud, tomorowInfo.hour[10].cloud, tomorowInfo.hour[11].cloud]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[12].cloud,
+      tomorowInfo.hour[13].cloud,
+      tomorowInfo.hour[14].cloud,
+      tomorowInfo.hour[15].cloud, tomorowInfo.hour[16].cloud,
+      tomorowInfo.hour[17].cloud]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[18].cloud,
+      tomorowInfo.hour[19].cloud,
+      tomorowInfo.hour[20].cloud,
+      tomorowInfo.hour[21].cloud]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[22].cloud,
+      tomorowInfo.hour[23].cloud,
+      tomorowInfo.hour[0].cloud,
+      tomorowInfo.hour[1].cloud, tomorowInfo.hour[2].cloud,
+      tomorowInfo.hour[3].cloud, tomorowInfo.hour[4].cloud,
+      tomorowInfo.hour[5].cloud]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Regenwahrscheinlichkeit in %</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[6].will_it_rain,
+      tomorowInfo.hour[7].will_it_rain,
+      tomorowInfo.hour[8].will_it_rain,
+      tomorowInfo.hour[9].will_it_rain, tomorowInfo.hour[10].will_it_rain, tomorowInfo.hour[11].will_it_rain]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[12].will_it_rain,
+      tomorowInfo.hour[13].will_it_rain,
+      tomorowInfo.hour[14].will_it_rain,
+      tomorowInfo.hour[15].will_it_rain, tomorowInfo.hour[16].will_it_rain,
+      tomorowInfo.hour[17].will_it_rain]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[18].will_it_rain,
+      tomorowInfo.hour[19].will_it_rain,
+      tomorowInfo.hour[20].will_it_rain,
+      tomorowInfo.hour[21].will_it_rain]):0 }}</td>
+    <td>{{ tomorowInfo.hour.length > 23 ? calculateAverage([tomorowInfo.hour[22].will_it_rain,
+      tomorowInfo.hour[23].will_it_rain,
+      tomorowInfo.hour[0].will_it_rain,
+      tomorowInfo.hour[1].will_it_rain, tomorowInfo.hour[2].will_it_rain,
+      tomorowInfo.hour[3].will_it_rain, tomorowInfo.hour[4].will_it_rain,
+      tomorowInfo.hour[5].will_it_rain]):0 }}</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <h3>Heute + 2 Tage : {{ todaytomorowInfo.date? todaytomorowInfo.date: ''}}</h3>
+  </tr>
+
+  <tr>
+    <th>Wetterdaten</th>
+    <th>Morgens</th>
+    <th>Mittags</th>
+    <th>Abends</th>
+    <th>Nachts</th>
+  </tr>
+  <tr>
+    <td>Temperatur in C°</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[6].temp_c,
+      todaytomorowInfo.hour[7].temp_c,
+      todaytomorowInfo.hour[8].temp_c,
+      todaytomorowInfo.hour[9].temp_c, todaytomorowInfo.hour[10].temp_c, todaytomorowInfo.hour[11].temp_c]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[12].temp_c,
+      todaytomorowInfo.hour[13].temp_c,
+      todaytomorowInfo.hour[14].temp_c,
+      todaytomorowInfo.hour[15].temp_c, todaytomorowInfo.hour[16].temp_c,
+      todaytomorowInfo.hour[17].temp_c]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[18].temp_c,
+      todaytomorowInfo.hour[19].temp_c,
+      todaytomorowInfo.hour[20].temp_c,
+      todaytomorowInfo.hour[21].temp_c]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[22].temp_c,
+      todaytomorowInfo.hour[23].temp_c,
+      todaytomorowInfo.hour[0].temp_c,
+      todaytomorowInfo.hour[1].temp_c, todaytomorowInfo.hour[2].temp_c,
+      todaytomorowInfo.hour[3].temp_c, todaytomorowInfo.hour[4].temp_c,
+      todaytomorowInfo.hour[5].temp_c]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Gefühlte Temperatur in C°</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[6].feelslike_c,
+      todaytomorowInfo.hour[7].feelslike_c,
+      todaytomorowInfo.hour[8].feelslike_c,
+      todaytomorowInfo.hour[9].feelslike_c, todaytomorowInfo.hour[10].feelslike_c,
+      todaytomorowInfo.hour[11].feelslike_c]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[12].feelslike_c,
+      todaytomorowInfo.hour[13].feelslike_c,
+      todaytomorowInfo.hour[14].feelslike_c,
+      todaytomorowInfo.hour[15].feelslike_c, todaytomorowInfo.hour[16].feelslike_c,
+      todaytomorowInfo.hour[17].feelslike_c]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[18].feelslike_c,
+      todaytomorowInfo.hour[19].feelslike_c,
+      todaytomorowInfo.hour[20].feelslike_c,
+      todaytomorowInfo.hour[21].feelslike_c]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[22].feelslike_c,
+      todaytomorowInfo.hour[23].feelslike_c,
+      todaytomorowInfo.hour[0].feelslike_c,
+      todaytomorowInfo.hour[1].feelslike_c, todaytomorowInfo.hour[2].feelslike_c,
+      todaytomorowInfo.hour[3].feelslike_c, todaytomorowInfo.hour[4].feelslike_c,
+      todaytomorowInfo.hour[5].feelslike_c]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Windgeschwindigkeit in Km/H</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[6].wind_kph,
+      todaytomorowInfo.hour[7].wind_kph,
+      todaytomorowInfo.hour[8].wind_kph,
+      todaytomorowInfo.hour[9].wind_kph, todaytomorowInfo.hour[10].wind_kph, todaytomorowInfo.hour[11].wind_kph]):0 }}
+    </td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[12].wind_kph,
+      todaytomorowInfo.hour[13].wind_kph,
+      todaytomorowInfo.hour[14].wind_kph,
+      todaytomorowInfo.hour[15].wind_kph, todaytomorowInfo.hour[16].wind_kph,
+      todaytomorowInfo.hour[17].wind_kph]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[18].wind_kph,
+      todaytomorowInfo.hour[19].wind_kph,
+      todaytomorowInfo.hour[20].wind_kph,
+      todaytomorowInfo.hour[21].wind_kph]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[22].wind_kph,
+      todaytomorowInfo.hour[23].wind_kph,
+      todaytomorowInfo.hour[0].wind_kph,
+      todaytomorowInfo.hour[1].wind_kph, todaytomorowInfo.hour[2].wind_kph,
+      todaytomorowInfo.hour[3].wind_kph, todaytomorowInfo.hour[4].wind_kph,
+      todaytomorowInfo.hour[5].wind_kph]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Windrichtung</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[6].wind_degree,
+      todaytomorowInfo.hour[7].wind_degree,
+      todaytomorowInfo.hour[8].wind_degree,
+      todaytomorowInfo.hour[9].wind_degree, todaytomorowInfo.hour[10].wind_degree,
+      todaytomorowInfo.hour[11].wind_degree]):0 }}
+    </td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[12].wind_degree,
+      todaytomorowInfo.hour[13].wind_degree,
+      todaytomorowInfo.hour[14].wind_degree,
+      todaytomorowInfo.hour[15].wind_degree, todaytomorowInfo.hour[16].wind_degree,
+      todaytomorowInfo.hour[17].wind_degree]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[18].wind_degree,
+      todaytomorowInfo.hour[19].wind_degree,
+      todaytomorowInfo.hour[20].wind_degree,
+      todaytomorowInfo.hour[21].wind_degree]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[22].wind_degree,
+      todaytomorowInfo.hour[23].wind_degree,
+      todaytomorowInfo.hour[0].wind_degree,
+      todaytomorowInfo.hour[1].wind_degree, todaytomorowInfo.hour[2].wind_degree,
+      todaytomorowInfo.hour[3].wind_degree, todaytomorowInfo.hour[4].wind_degree,
+      todaytomorowInfo.hour[5].wind_degree]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Wolkenwahrscheinlichkeit in %</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[6].cloud,
+      todaytomorowInfo.hour[7].cloud,
+      todaytomorowInfo.hour[8].cloud,
+      todaytomorowInfo.hour[9].cloud, todaytomorowInfo.hour[10].cloud, todaytomorowInfo.hour[11].cloud]):0 }}
+    </td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[12].cloud,
+      todaytomorowInfo.hour[13].cloud,
+      todaytomorowInfo.hour[14].cloud,
+      todaytomorowInfo.hour[15].cloud, todaytomorowInfo.hour[16].cloud,
+      todaytomorowInfo.hour[17].cloud]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[18].cloud,
+      todaytomorowInfo.hour[19].cloud,
+      todaytomorowInfo.hour[20].cloud,
+      todaytomorowInfo.hour[21].cloud]):0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[22].cloud,
+      todaytomorowInfo.hour[23].cloud,
+      todaytomorowInfo.hour[0].cloud,
+      todaytomorowInfo.hour[1].cloud, todaytomorowInfo.hour[2].cloud,
+      todaytomorowInfo.hour[3].cloud, todaytomorowInfo.hour[4].cloud,
+      todaytomorowInfo.hour[5].cloud]):0 }}</td>
+  </tr>
+  <tr>
+    <td>Regenwahrscheinlichkeit in %</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[6].will_it_rain,
+      todaytomorowInfo.hour[7].will_it_rain,
+      todaytomorowInfo.hour[8].will_it_rain,
+      todaytomorowInfo.hour[9].will_it_rain, todaytomorowInfo.hour[10].will_it_rain,
+      todaytomorowInfo.hour[11].will_it_rain]) !==0? calculateAverage([todaytomorowInfo.hour[6].will_it_rain,
+      todaytomorowInfo.hour[7].will_it_rain,
+      todaytomorowInfo.hour[8].will_it_rain,
+      todaytomorowInfo.hour[9].will_it_rain, todaytomorowInfo.hour[10].will_it_rain,
+      todaytomorowInfo.hour[11].will_it_rain])*100 : 0 : 0 }}
+    </td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[12].will_it_rain,
+      todaytomorowInfo.hour[13].will_it_rain,
+      todaytomorowInfo.hour[14].will_it_rain,
+      todaytomorowInfo.hour[15].will_it_rain, todaytomorowInfo.hour[16].will_it_rain,
+      todaytomorowInfo.hour[17].will_it_rain])!==0? calculateAverage([todaytomorowInfo.hour[12].will_it_rain,
+      todaytomorowInfo.hour[13].will_it_rain,
+      todaytomorowInfo.hour[14].will_it_rain,
+      todaytomorowInfo.hour[15].will_it_rain, todaytomorowInfo.hour[16].will_it_rain,
+      todaytomorowInfo.hour[17].will_it_rain])*100 : 0 : 0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[18].will_it_rain,
+      todaytomorowInfo.hour[19].will_it_rain,
+      todaytomorowInfo.hour[20].will_it_rain,
+      todaytomorowInfo.hour[21].will_it_rain]) !==0?calculateAverage([todaytomorowInfo.hour[18].will_it_rain,
+      todaytomorowInfo.hour[19].will_it_rain,
+      todaytomorowInfo.hour[20].will_it_rain,
+      todaytomorowInfo.hour[21].will_it_rain])*100 : 0 : 0 }}</td>
+    <td>{{ todaytomorowInfo.hour.length > 23 ? calculateAverage([todaytomorowInfo.hour[22].will_it_rain,
+      todaytomorowInfo.hour[23].will_it_rain,
+      todaytomorowInfo.hour[0].will_it_rain,
+      todaytomorowInfo.hour[1].will_it_rain, todaytomorowInfo.hour[2].will_it_rain,
+      todaytomorowInfo.hour[3].will_it_rain, todaytomorowInfo.hour[4].will_it_rain,
+      todaytomorowInfo.hour[5].will_it_rain])!==0?calculateAverage([todaytomorowInfo.hour[22].will_it_rain,
+      todaytomorowInfo.hour[23].will_it_rain,
+      todaytomorowInfo.hour[0].will_it_rain,
+      todaytomorowInfo.hour[1].will_it_rain, todaytomorowInfo.hour[2].will_it_rain,
+      todaytomorowInfo.hour[3].will_it_rain, todaytomorowInfo.hour[4].will_it_rain,
+      todaytomorowInfo.hour[5].will_it_rain])*100 : 0 : 0 }}</td>
+  </tr>
+</table>
